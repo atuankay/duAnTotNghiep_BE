@@ -17,4 +17,7 @@ public interface CategoryService {
 
     ResponseEntity<Response> getCategories(SystemEnumStatus status, int currentPage, int limitPage);
 
+    // Phương thức để lấy danh mục với thông tin sản phẩm và số lượng tồn kho
+    ResponseEntity<Response> getCategoryWithProductStock(UUID categoryId);
+
 }

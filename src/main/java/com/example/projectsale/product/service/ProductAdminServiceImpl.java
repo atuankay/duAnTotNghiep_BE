@@ -25,7 +25,7 @@ public class ProductAdminServiceImpl implements ProductAdminService {
     @Override
     public void updateProduct(UUID id, ProductDto productDto) {
         Product product = productRepo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + id));  // Sử dụng instance productRepo
         product.setName(productDto.getName());
         product.setPrice(productDto.getPrice());
         product.setColor(productDto.getColor());
