@@ -44,7 +44,7 @@ spring:
   datasource:
     url: jdbc:postgresql://${POSTGRES.HOST:localhost}:${POSTGRES.PORT:5432}/${POSTGRES.DATABASE:project_sale}
     username: ${POSTGRES.USER:postgres}
-    password: ${POSTGRES.PASSWORD:password}
+    password: ${POSTGRES.PASSWORD:123}
     hikari:
       connectionTimeout: ${DATASOURCE.CONNECTION.TIMEOUT:30000}
       idleTimeout: ${DATASOURCE.IDLE.TIMEOUT:600000}

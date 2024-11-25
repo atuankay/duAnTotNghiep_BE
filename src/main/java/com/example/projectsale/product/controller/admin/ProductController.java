@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-@RestController
+@RestController("adminProductController")
 @RequestMapping(ProductConstants.API_ADMIN_PRODUCTS)
 @RequiredArgsConstructor // Tạo constructor tự động
 public class ProductController {

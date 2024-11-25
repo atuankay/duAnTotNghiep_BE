@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -75,11 +76,21 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public ResponseEntity<Response> getCategories(SystemEnumStatus status, int currentPage, int limitPage) {
         // Logic lấy danh sách danh mục
-        // Tìm kiếm danh mục theo trạng thái và phân trang
         var pageable = Pageable.ofSize(limitPage).withPage(currentPage - 1);
         var categories = categoryRepo.findCategoriesByStatus(status, pageable);
-        return responseUtil.responsesSuccess("CTG_003", categories.getContent(), pageable);
+
+        // Đóng gói thông tin phân trang cùng dữ liệu danh mục
+        var responseData = Map.of(
+                "content", categories.getContent(),
+                "currentPage", categories.getNumber() + 1,
+                "totalPages", categories.getTotalPages(),
+                "totalElements", categories.getTotalElements()
+        );
+
+        // Trả về response
+        return responseUtil.responsesSuccess("CTG_003", responseData, null);
     }
+
 
     @Override
     public ResponseEntity<Response> getCategoryWithProductStock(UUID categoryId) {

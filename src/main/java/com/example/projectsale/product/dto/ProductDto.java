@@ -24,5 +24,6 @@ public class ProductDto {
     private String color;
 
     private String shortDescription;
+
     private String longDescription;
 }
