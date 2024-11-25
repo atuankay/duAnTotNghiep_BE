@@ -13,10 +13,8 @@ import java.util.UUID;
 
 @RestController("adminProductController")
 @RequestMapping(ProductConstants.API_ADMIN_PRODUCTS)
-@RequiredArgsConstructor // Tạo constructor tự động
-public class ProductController {
-
-    private final ProductAdminService productAdminService; // Inject service
+@RequiredArgsConstructor
+public class ProductAdminController {
 
     @PostMapping(ProductConstants.API_ADD_PRODUCT)
     public ResponseEntity<Void> addNewProduct(@Valid @RequestBody ProductDto product) {
@@ -24,13 +22,13 @@ public class ProductController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PutMapping(ProductConstants.API_UPDATE_PRODUCT) // Sử dụng API_UPDATE_PRODUCT từ constants
+    @PutMapping(ProductConstants.API_UPDATE_PRODUCT)
     public ResponseEntity<Void> updateProduct(@PathVariable UUID id, @Valid @RequestBody ProductDto product) {
         productAdminService.updateProduct(id, product);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping(ProductConstants.API_DELETE_PRODUCT) // Sử dụng API_DELETE_PRODUCT từ constants
+    @DeleteMapping(ProductConstants.API_DELETE_PRODUCT)
     public ResponseEntity<Void> deleteProductById(@PathVariable UUID id) {
         productAdminService.deleteProductById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

@@ -11,12 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@RestController
-@RequestMapping(ProductConstants.API_PUBLIC_PRODUCTS)
+@RestController("MemberProductController")
+@RequestMapping(ProductConstants.API_MEMBER_PRODUCTS)
 @RequiredArgsConstructor
 public class ProductMemberController {
-
-    private final ProductMemberService productMemberService;
 
     @GetMapping(ProductConstants.API_GET_ALL_PRODUCTS)
     public ResponseEntity<List<ProductDto>> getProductsByPage(
@@ -33,8 +31,7 @@ public class ProductMemberController {
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
-    // Thêm sản phẩm vào giỏ hàng
-    @PostMapping("/add-to-cart/{productId}")
+    @PostMapping(ProductConstants.API_ADD_TO_CART)
     public ResponseEntity<Void> addToCart(@PathVariable UUID productId) {
         try {
             productMemberService.addProductToCart(productId);
@@ -44,3 +41,4 @@ public class ProductMemberController {
         }
     }
 }
+
