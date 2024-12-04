@@ -92,8 +92,10 @@ dependencies {
     // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.11.3'
 
-    // https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
-    implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '2.41.0'
+    implementation 'org.seleniumhq.selenium:selenium-java:4.16.1'
+    implementation 'io.github.bonigarcia:webdrivermanager:5.6.2'
+    testImplementation 'org.assertj:assertj-core:3.23.0'  // Sử dụng phiên bản mới nhất
+
 
 
 }
