@@ -29,6 +29,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -129,14 +130,17 @@ public class OrderDetailServiceImpl extends AbsServiceUtil implements OrderDetai
             for (OrderDetailDto dto : orderDetailDtos) {
                 log.info("Processing DTO: {}", dto);
 
-                Product product = productRepo.findById(dto.getProduct().getId())
+                // Lấy Product dựa trên productId
+                Product product = productRepo.findById(UUID.fromString(dto.getProductId()))
                         .orElseThrow(() -> {
-                            log.error("Product not found for ID: {}", dto.getProduct().getId());
+                            log.error("Product not found for ID: {}", dto.getProductId());
                             return new ApiRequestException("ER_001: Product not found.");
                         });
 
+
                 log.info("Found product: {}", product);
 
+                // Cập nhật inventory
                 inventoryService.updateInventory(
                         product.getId(),
                         dto.getSize(),
@@ -145,6 +149,7 @@ public class OrderDetailServiceImpl extends AbsServiceUtil implements OrderDetai
                 );
                 log.info("Inventory updated for product ID: {}", product.getId());
 
+                // Tạo OrderDetail
                 OrderDetail orderDetail = OrderDetail.builder()
                         .quantity(dto.getQuantity())
                         .price(dto.getPrice())
@@ -161,12 +166,14 @@ public class OrderDetailServiceImpl extends AbsServiceUtil implements OrderDetai
                 orderDetails.add(orderDetail);
             }
 
+            // Tính tổng giá
             BigDecimal totalPrice = orderDetails.stream()
                     .map(orderDetail -> orderDetail.getPrice().multiply(new BigDecimal(orderDetail.getQuantity())))
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
             log.info("Total price calculated: {}", totalPrice);
 
+            // Tạo Order
             Order order = Order.builder()
                     .user(getUser())
                     .email(orderDetailDtos.get(0).getEmail())
@@ -182,6 +189,7 @@ public class OrderDetailServiceImpl extends AbsServiceUtil implements OrderDetai
 
             orderDetails.forEach(orderDetail -> orderDetail.setOrder(order));
 
+            // Lưu dữ liệu vào DB
             orderDetailRepo.saveAll(orderDetails);
             log.info("Saved order details: {}", orderDetails);
 
@@ -194,6 +202,7 @@ public class OrderDetailServiceImpl extends AbsServiceUtil implements OrderDetai
             throw new RuntimeException("Order creation failed!");
         }
     }
+
 
 
 }

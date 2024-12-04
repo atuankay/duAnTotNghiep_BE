@@ -26,7 +26,7 @@ public class OrderDetailDto {
 
     private Order order;
 
-    private Product product;
+    private String productId;
 
     private String email;
 
