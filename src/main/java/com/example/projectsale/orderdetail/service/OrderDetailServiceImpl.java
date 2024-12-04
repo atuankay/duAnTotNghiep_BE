@@ -53,69 +53,147 @@ public class OrderDetailServiceImpl extends AbsServiceUtil implements OrderDetai
     private final InventoryService inventoryService;
 
 
+//    @Override
+//    public ResponseEntity<Response> createOrderDetail(String cartSessionId, OrderDetailDto orderDetailDto) {
+//        try {
+//            String data = redisTemplate.opsForValue().get(cartSessionId);
+//            if (data == null) {
+//                return responseUtil.responseError("ER_002");
+//            }
+//            TypeReference<Cart> cartData = new TypeReference<>() {
+//            };
+//            Cart cart = objectMapper.readValue(data, cartData);
+//
+//            List<OrderDetail> orderDetails = new ArrayList<>();
+//
+//            cart.getItems().forEach((id, cartItem) -> {
+//                log.info(String.valueOf(cartItem.getProductId()));
+//                Product product = productRepo.findByProductCondition(cartItem.getProductId(), cartItem.getQuantity())
+//                        .orElseThrow(() -> new ApiRequestException("ER_001"));
+//                inventoryService.updateInventory(cartItem.getProductId(), cartItem.getSize(),
+//                        cartItem.getColor(), cartItem.getQuantity());
+//                OrderDetail build = OrderDetail.builder()
+//                        .quantity(cartItem.getQuantity())
+//                        .price(product.getPrice())
+//                        .user(getUser())
+//                        .product(product)
+//                        .status(SystemEnumStatus.ACTIVE)
+//                        .isDeleted(SystemConstant.IS_DELETED_ACTIVE)
+//                        .build();
+//
+//                orderDetails.add(build);
+//            });
+//
+//            BigDecimal totalPrice = orderDetails.stream()
+//                    .map(value -> value.getPrice()
+//                            .multiply(new BigDecimal(value.getQuantity())))
+//                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+//
+//            Order order = Order.builder()
+//                    .user(getUser())
+//                    .email(orderDetailDto.getEmail())
+//                    .address(orderDetailDto.getAddress())
+//                    .orderDate(new Date())
+//                    .fullName(orderDetailDto.getFullName())
+//                    .description(orderDetailDto.getDescription())
+//                    .phoneNumber(orderDetailDto.getPhoneNumber())
+//                    .totalPrice(totalPrice)
+//                    .status(SystemEnumStatus.ACTIVE)
+//                    .isDeleted(SystemConstant.IS_DELETED_ACTIVE)
+//                    .build();
+//
+//            orderDetails.forEach(orderDetail -> {
+//                orderDetail.setOrder(order);
+//            });
+//
+//            orderDetailRepo.saveAll(orderDetails);
+//            orderRepo.save(order);
+//            log.info(orderDetails.toString());
+//
+//            redisTemplate.delete(cartSessionId);
+//
+//            return responseUtil.responseSuccess("OR_001");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw new RuntimeException("Order fail!..");
+//        }
+//    }
+
     @Override
-    public ResponseEntity<Response> createOrderDetail(String cartSessionId, OrderDetailDto orderDetailDto) {
+    public ResponseEntity<Response> createOrderDetail(List<OrderDetailDto> orderDetailDtos) {
         try {
-            String data = redisTemplate.opsForValue().get(cartSessionId);
-            if (data == null) {
-                return responseUtil.responseError("ER_002");
-            }
-            TypeReference<Cart> cartData = new TypeReference<>() {
-            };
-            Cart cart = objectMapper.readValue(data, cartData);
+            log.info("Start processing order details with DTOs: {}", orderDetailDtos);
 
             List<OrderDetail> orderDetails = new ArrayList<>();
 
-            cart.getItems().forEach((id, cartItem) -> {
-                log.info(String.valueOf(cartItem.getProductId()));
-                Product product = productRepo.findByProductCondition(cartItem.getProductId(), cartItem.getQuantity())
-                        .orElseThrow(() -> new ApiRequestException("ER_001"));
-                inventoryService.updateInventory(cartItem.getProductId(), cartItem.getSize(),
-                        cartItem.getColor(), cartItem.getQuantity());
-                OrderDetail build = OrderDetail.builder()
-                        .quantity(cartItem.getQuantity())
-                        .price(product.getPrice())
+            for (OrderDetailDto dto : orderDetailDtos) {
+                log.info("Processing DTO: {}", dto);
+
+                Product product = productRepo.findById(dto.getProduct().getId())
+                        .orElseThrow(() -> {
+                            log.error("Product not found for ID: {}", dto.getProduct().getId());
+                            return new ApiRequestException("ER_001: Product not found.");
+                        });
+
+                log.info("Found product: {}", product);
+
+                inventoryService.updateInventory(
+                        product.getId(),
+                        dto.getSize(),
+                        dto.getColor(),
+                        dto.getQuantity()
+                );
+                log.info("Inventory updated for product ID: {}", product.getId());
+
+                OrderDetail orderDetail = OrderDetail.builder()
+                        .quantity(dto.getQuantity())
+                        .price(dto.getPrice())
                         .user(getUser())
                         .product(product)
+                        .size(dto.getSize())
+                        .color(dto.getColor())
                         .status(SystemEnumStatus.ACTIVE)
                         .isDeleted(SystemConstant.IS_DELETED_ACTIVE)
                         .build();
 
-                orderDetails.add(build);
-            });
+                log.info("Created OrderDetail: {}", orderDetail);
+
+                orderDetails.add(orderDetail);
+            }
 
             BigDecimal totalPrice = orderDetails.stream()
-                    .map(value -> value.getPrice()
-                            .multiply(new BigDecimal(value.getQuantity())))
+                    .map(orderDetail -> orderDetail.getPrice().multiply(new BigDecimal(orderDetail.getQuantity())))
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            log.info("Total price calculated: {}", totalPrice);
 
             Order order = Order.builder()
                     .user(getUser())
-                    .email(orderDetailDto.getEmail())
-                    .address(orderDetailDto.getAddress())
+                    .email(orderDetailDtos.get(0).getEmail())
+                    .address(orderDetailDtos.get(0).getAddress())
                     .orderDate(new Date())
-                    .fullName(orderDetailDto.getFullName())
-                    .description(orderDetailDto.getDescription())
-                    .phoneNumber(orderDetailDto.getPhoneNumber())
+                    .fullName(orderDetailDtos.get(0).getFullName())
+                    .description(orderDetailDtos.get(0).getDescription())
+                    .phoneNumber(orderDetailDtos.get(0).getPhoneNumber())
                     .totalPrice(totalPrice)
                     .status(SystemEnumStatus.ACTIVE)
                     .isDeleted(SystemConstant.IS_DELETED_ACTIVE)
                     .build();
 
-            orderDetails.forEach(orderDetail -> {
-                orderDetail.setOrder(order);
-            });
+            orderDetails.forEach(orderDetail -> orderDetail.setOrder(order));
 
             orderDetailRepo.saveAll(orderDetails);
-            orderRepo.save(order);
-            log.info(orderDetails.toString());
+            log.info("Saved order details: {}", orderDetails);
 
-            redisTemplate.delete(cartSessionId);
+            orderRepo.save(order);
+            log.info("Saved order: {}", order);
 
             return responseUtil.responseSuccess("OR_001");
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Order fail!..");
+            log.error("Error while creating order details: {}", e.getMessage(), e);
+            throw new RuntimeException("Order creation failed!");
         }
     }
+
+
 }

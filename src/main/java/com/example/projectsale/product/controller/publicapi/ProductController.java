@@ -19,7 +19,7 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public ResponseEntity<Response> findAllProducts(ProductSearchDtoRequest request) {
+    public ResponseEntity<Response> findAllProducts(@RequestBody ProductSearchDtoRequest request) {
         return productService.findAllProducts(request);
 
     }

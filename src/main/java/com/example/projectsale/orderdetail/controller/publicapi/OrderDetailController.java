@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(SystemConstant.API_PUBLIC + SystemConstant.VERSION_ONE + "/order")
 @RequiredArgsConstructor
@@ -16,8 +18,11 @@ public class OrderDetailController {
     private final OrderDetailService orderDetailService;
 
     @PostMapping
-    public ResponseEntity<Response> createOrderDetail(@RequestHeader("cartSessionId") String cartSessionId,
-                                                      @RequestBody OrderDetailDto orderDetailDto) {
-        return orderDetailService.createOrderDetail(cartSessionId, orderDetailDto);
+    public ResponseEntity<Response> createOrderDetails(@RequestBody List<OrderDetailDto> orderDetailDtos) {
+        return orderDetailService.createOrderDetail(orderDetailDtos);
     }
+//    public ResponseEntity<Response> createOrderDetail(@RequestHeader("cartSessionId") String cartSessionId,
+//                                                      @RequestBody OrderDetailDto orderDetailDto) {
+//        return orderDetailService.createOrderDetail(cartSessionId, orderDetailDto);
+//    }
 }

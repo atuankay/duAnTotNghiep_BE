@@ -33,7 +33,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class InventoryServiceImpl extends AbsServiceUtil implements InventoryService {
+public class    InventoryServiceImpl extends AbsServiceUtil implements InventoryService {
 
     private final InventoryRepo inventoryRepo;
     private final ProductRepo productRepo;
