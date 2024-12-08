@@ -45,4 +45,9 @@ public class SupplierController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/getall")
+    public ResponseEntity<?> getAll() {
+        return ResponseEntity.ok(supplierService.getAll());
+    }
+
 }

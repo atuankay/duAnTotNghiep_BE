@@ -140,6 +140,7 @@ public class ProductServiceImpl extends AbsServiceUtil implements ProductService
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 //        productDtoMapper.toProductDetailResponse(product);
         ProductSimpleDto productSimpleDto = ProductSimpleDto.builder()
+                .price(product.getPrice())
                 .name(product.getName())
                 .shortDescription(product.getShortDescription())
                 .images(product.getImageProducts().stream()

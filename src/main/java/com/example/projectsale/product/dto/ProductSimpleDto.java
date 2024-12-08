@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
@@ -14,4 +15,5 @@ public class ProductSimpleDto {
     private String name;
     private String shortDescription;
     private List<ImageProductDto> images;
+    private BigDecimal price;
 }

@@ -87,4 +87,13 @@ public class SupplierServiceImpl extends AbsServiceUtil implements SupplierServi
         supplier.setStatus(SystemEnumStatus.NO_ACTIVE);
         supplierRepository.save(supplier);
     }
+
+    @Override
+    public List<SupplierDto> getAll() {
+        List<Supplier> suppliers = supplierRepository.findAll();
+        return suppliers
+                .stream()
+                .map(supplierMapper::toDTO)
+                .toList();
+    }
 }

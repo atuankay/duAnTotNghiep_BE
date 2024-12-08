@@ -1,5 +1,6 @@
 package com.example.projectsale.supplier.repo;
 
+import com.example.projectsale.supplier.dto.SupplierDto;
 import com.example.projectsale.supplier.entity.Supplier;
 import com.example.projectsale.utils.AbstractRepository;
 import org.springframework.data.domain.Page;
@@ -41,4 +42,7 @@ public interface SupplierRepo extends AbstractRepository<Supplier, UUID> {
                 iv.product.id = :productId
             """)
     Optional<Supplier> findSupplierByProductId(UUID productId);
+//
+//    @Query("SELECT i FROM Inventory i")
+//    List<SupplierDto> findAllDTO();
 }

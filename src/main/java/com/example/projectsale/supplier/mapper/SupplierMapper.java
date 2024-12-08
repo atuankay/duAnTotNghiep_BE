@@ -34,6 +34,7 @@ public class SupplierMapper {
 
     public SupplierDto toDTO(Supplier entity) {
         return SupplierDto.builder()
+                .supplierId(entity.getId())
                 .supplierName(entity.getSupplierName())
                 .contactName(entity.getContactName())
                 .contactPhone(entity.getContactPhone())

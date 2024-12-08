@@ -9,12 +9,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.UUID;
+
 @SuperBuilder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class SupplierDto {
+
+    private UUID supplierId;
 
     @NotBlank
     private String supplierName;

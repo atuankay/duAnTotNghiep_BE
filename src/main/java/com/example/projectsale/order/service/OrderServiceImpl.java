@@ -1,8 +1,10 @@
 package com.example.projectsale.order.service;
 
+import com.example.projectsale.enums.StatusOrder;
 import com.example.projectsale.inventory.dto.response.InventoryIndexDtoResponse;
 import com.example.projectsale.inventory.entity.Inventory;
 import com.example.projectsale.order.dto.OrderDto;
+import com.example.projectsale.order.dto.UpdateOrderDTO;
 import com.example.projectsale.order.dto.request.OrderSearchDtoRequest;
 import com.example.projectsale.order.entity.Order;
 import com.example.projectsale.order.event.OrderDischargeEvent;
@@ -48,6 +50,15 @@ public class OrderServiceImpl extends AbsServiceUtil implements OrderService {
     }
 
     @Override
+    public List<OrderDto> getAll() {
+        List<Order> all = orderRepo.findAll();
+        List<OrderDto> list = all.stream()
+                .map(orderDtoMapper)
+                .toList();
+        return list;
+    }
+
+    @Override
     public OrderDto updateOrder(String orderId, Order order) {
         Optional<Order> existingOrderOpt = orderRepo.findById(UUID.fromString(orderId));
         if (existingOrderOpt.isEmpty()) {
@@ -75,6 +86,22 @@ public class OrderServiceImpl extends AbsServiceUtil implements OrderService {
 
     }
 
+    @Override
+    public OrderDto updateStatusOrder(UpdateOrderDTO updatOrders) {
+        Order order = orderRepo.findById(updatOrders.getOrderId()).orElseThrow();
+
+        if (updatOrders.getStatus().equals(StatusOrder.PENDING.toString())) {
+            order.setStatusOrder(StatusOrder.PENDING);
+        } else if (order.getStatusOrder().equals(StatusOrder.PENDING)) {
+            order.setStatusOrder(StatusOrder.PENDING);
+        } else if (order.getStatusOrder().equals(StatusOrder.COMPLETED)) {
+            order.setStatusOrder(StatusOrder.COMPLETED);
+        } else if (order.getStatusOrder().equals(StatusOrder.REFUNDED)) {
+            order.setStatusOrder(StatusOrder.REFUNDED);
+        }
+        order = orderRepo.save(order);
+        return orderDtoMapper.apply(order);
+    }
 
 //    @Override
 //    public void cancelOrder(UUID orderId) {

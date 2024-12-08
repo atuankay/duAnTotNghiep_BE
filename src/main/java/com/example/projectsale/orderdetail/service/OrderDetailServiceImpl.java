@@ -2,6 +2,7 @@ package com.example.projectsale.orderdetail.service;
 
 import com.example.projectsale.cartitem.dto.Cart;
 import com.example.projectsale.constant.SystemConstant;
+import com.example.projectsale.enums.StatusOrder;
 import com.example.projectsale.enums.SystemEnumStatus;
 import com.example.projectsale.exception.ApiRequestException;
 import com.example.projectsale.inventory.repo.InventoryRepo;
@@ -183,6 +184,7 @@ public class OrderDetailServiceImpl extends AbsServiceUtil implements OrderDetai
                     .description(orderDetailDtos.get(0).getDescription())
                     .phoneNumber(orderDetailDtos.get(0).getPhoneNumber())
                     .totalPrice(totalPrice)
+                    .statusOrder(StatusOrder.PENDING)
                     .status(SystemEnumStatus.ACTIVE)
                     .isDeleted(SystemConstant.IS_DELETED_ACTIVE)
                     .build();
